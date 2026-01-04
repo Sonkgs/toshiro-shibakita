@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: dockerfile
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - php
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - app-network
+
+  # PHP-FPM
+  php:
+    image: php:8.2-fpm
+    container_name: php
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - app-network
+
+  # MySQL
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Senha123
+      MYSQL_DATABASE: meubanco
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Senha123
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge
